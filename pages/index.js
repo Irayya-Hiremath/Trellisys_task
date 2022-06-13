@@ -6,24 +6,22 @@ import axios, * as others from "axios";
 function Home() {
   const [allEntries, setAllentries] = useState([]);
   const [category, setCategory] = useState([]);
-  const [display,setDisplay]=useState([])
-  let originalAr = [];
+   const [display,setDisplay]=useState([])
 
-
+  //  api request for getting data and populate first time
   function populateData() {
     axios
       .get(`https://api.publicapis.org/entries`)
       .then((response) => {
         setAllentries(response.data.entries);
-        setDisplay(response.data.entries)
-        console.log(allEntries);
-       
+        setDisplay(response.data.entries);
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
+  //  api request for getting data and populate category list
   function getCategory(e) {
     axios
       .get(`https://api.publicapis.org/categories`)
@@ -36,12 +34,14 @@ function Home() {
       });
   }
 
-  function filterbyCategory(e) {
+  //  api request for getting data and populate by category
+  function filterby_Category(e) {
     axios
       .get(`https://api.publicapis.org/entries?category=${e.target.value}`)
       .then((response) => {
-        // setAllentries(response.data.entries);
+        setAllentries(response.data.entries);
         setDisplay(response.data.entries);
+
       })
 
       .catch((error) => {
@@ -49,27 +49,21 @@ function Home() {
       });
   }
 
+
   function searchCors(e) {
-    console.log(originalAr);
-    originalAr=allEntries.map((elem)=>{
-      return({...elem})
-    })
+
     if (e.target.value == "yes") {
-      let result = originalAr.filter((el) => el.Cors == e.target.value).map((ele)=>{
-        return({...ele})
-      });
-      console.log(result);
+      let result = allEntries.filter((el) => el.Cors == e.target.value);
       setDisplay(result);
 
-    } else if (e.target.value == "no") {
-      let result = originalAr.filter((el) => el.Cors == e.target.value).map((ele)=>{
-        return({...ele})
-      });;
-      console.log(result);
+    } else if(e.target.value == "no") {
+      
+      let result = allEntries.filter((el) => el.Cors == e.target.value);
       setDisplay(result);
 
-    }else if (e.target.value == "all") {
-      populateData()
+    }else if(e.target.value == "all") {
+      let result = allEntries.filter((el) => el.Cors == 'yes'||'no');
+      setDisplay(result);
     }
   }
 
@@ -94,7 +88,7 @@ function Home() {
               <Form.Select className="w-100"
                     name="cate"
                     onChange={
-                      filterbyCategory}>
+                      filterby_Category}>
 
                     <option value="">Select By Category</option>
                     {category.map((data) => {
