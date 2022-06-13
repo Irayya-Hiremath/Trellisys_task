@@ -6,24 +6,21 @@ import axios, * as others from "axios";
 function Home() {
   const [allEntries, setAllentries] = useState([]);
   const [category, setCategory] = useState([]);
+  const [display,setDisplay]=useState([])
   let originalAr = [];
-  // const [cors,setCors]=useState('')
-  //  const [display,setDisplay]=useState([])
+
 
   function populateData() {
     axios
       .get(`https://api.publicapis.org/entries`)
       .then((response) => {
         setAllentries(response.data.entries);
-
+        setDisplay(response.data.entries)
         console.log(allEntries);
-        console.log(
-          "irayya",
-          allEntries.filter((el) => el.Category == cate)
-        );
+       
       })
       .catch((error) => {
-        console.log("eroooor bacerd" + error);
+        console.log(error);
       });
   }
 
@@ -35,35 +32,42 @@ function Home() {
         setCategory(response.data.categories);
       })
       .catch((error) => {
-        console.log("eroooor bacerd" + error);
+        console.log(error);
       });
   }
 
-  function filterEntries(e) {
+  function filterbyCategory(e) {
     axios
       .get(`https://api.publicapis.org/entries?category=${e.target.value}`)
       .then((response) => {
-        setAllentries(response.data.entries);
+        // setAllentries(response.data.entries);
+        setDisplay(response.data.entries);
       })
 
       .catch((error) => {
-        console.log("eroooor bacerd" + error);
+        console.log(error);
       });
   }
 
   function searchCors(e) {
     console.log(originalAr);
+    originalAr=allEntries.map((elem)=>{
+      return({...elem})
+    })
     if (e.target.value == "yes") {
-      // alert("hi");
-      let result = allEntries.filter((el) => el.Cors == e.target.value);
+      let result = originalAr.filter((el) => el.Cors == e.target.value).map((ele)=>{
+        return({...ele})
+      });
       console.log(result);
-      setAllentries(result);
+      setDisplay(result);
+
     } else if (e.target.value == "no") {
-      // alert("n");
-      populateData()
-      let result = originalAr.filter((el) => el.Cors == e.target.value);
+      let result = originalAr.filter((el) => el.Cors == e.target.value).map((ele)=>{
+        return({...ele})
+      });;
       console.log(result);
-      setAllentries(result);
+      setDisplay(result);
+
     }else if (e.target.value == "all") {
       populateData()
     }
@@ -86,19 +90,17 @@ function Home() {
 
           <div className="container-fluid navmenu row w-100 m-auto py-2 bg-dark" >
 
-           <Form.Group  className='col-lg-3 col-6' controlId="validationCustom02">
+            <Form.Group  className='col-lg-3 col-6' controlId="validationCustom02">
               <Form.Select className="w-100"
                     name="cate"
                     onChange={
-                      filterEntries
-                    }>
-                  
+                      filterbyCategory}>
+
                     <option value="">Select By Category</option>
-
                     {category.map((data) => {
-
                       return <option key={data.id}  value={data}>{data}</option>;
                     })}
+
               </Form.Select>
             </Form.Group>
 
@@ -121,7 +123,7 @@ function Home() {
 
               <div className="container-fluid cardss row w-100 m-auto my-2">
 
-                {allEntries.map((data) => {
+                {display.map((data) => {
                   return (
                     <Card key={data.id}className=" populate container-fluid  col-lg-2 my-3 mx-2 p-2">
                           <h6>Category:{data.Category}</h6>
